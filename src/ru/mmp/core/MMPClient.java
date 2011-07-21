@@ -1,10 +1,13 @@
 package ru.mmp.core;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Vector;
 
+import ru.mmp.listener.MessageListener;
+import ru.mmp.listener.StatusListener;
 import ru.mmp.packet.Packet;
-import ru.mmp.packet.out.MRIM_CS_HELLO;
-import ru.mmp.packet.out.MRIM_CS_PING;
+import ru.mmp.packet.out.*;
 
 /**
  * 
@@ -18,6 +21,8 @@ public class MMPClient {
 	private boolean connect = false;
 	private PacketAnalyser analyzer;
 	private MRIM_CS_PING ping;
+	private List statusListener;
+	private List messageListener;
 
 	public MMPClient() {
 		this.email = email;
@@ -25,6 +30,8 @@ public class MMPClient {
 		analyzer = new PacketAnalyser(this);
 		con = new MMPConnect(analyzer);
 		ping = new MRIM_CS_PING(this);
+		statusListener = new Vector();
+		messageListener = new Vector();
 	}
 
 	public void setEmail(String email) {
@@ -42,6 +49,30 @@ public class MMPClient {
 		sendPacket(new MRIM_CS_HELLO());
 	}
 
+	public void disconnect() throws IOException {
+		ping.stop();
+		con.disconnect();
+		connect = false;
+	}
+
+	public void login() {
+		MRIM_CS_LOGIN2 l = new MRIM_CS_LOGIN2();
+		l.setEmail(email);
+		l.setPass(pass);
+		sendPacket(l.push());
+	}
+
+	public void sendMsg(String email, String msg) {
+		MRIM_CS_MESSAGE m = new MRIM_CS_MESSAGE();
+		m.setEmail(email);
+		m.setMsg(msg);
+		sendPacket(m.push());
+	}
+
+	public void chStatus() {
+		sendPacket(new MRIM_CS_CHANGE_STATUS().push());
+	}
+
 	public void sendPacket(Packet p) {
 		if (connect)
 			con.sendPacket(p);
@@ -49,6 +80,30 @@ public class MMPClient {
 
 	public MRIM_CS_PING getPing() {
 		return ping;
+	}
+
+	public void addStatusListener(StatusListener listener) {
+		statusListener.add(listener);
+	}
+
+	public boolean removeStatusListener(StatusListener listener) {
+		return statusListener.remove(listener);
+	}
+
+	public List getStatusListener() {
+		return statusListener;
+	}
+
+	public void addMessageListener(MessageListener listener) {
+		messageListener.add(listener);
+	}
+
+	public boolean removeMessageListener(MessageListener listener) {
+		return messageListener.remove(listener);
+	}
+
+	public List getMessageListener() {
+		return messageListener;
 	}
 
 }

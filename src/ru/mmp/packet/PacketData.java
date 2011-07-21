@@ -29,7 +29,7 @@ public class PacketData {
 		putDWord((int) value);
 	}
 
-	void putDWord(int value) {
+	public void putDWord(int value) {
 		try {
 			out.write(value & 0x000000FF);
 			out.write(((value & 0x0000FF00) >> 8) & 0xFF);
@@ -39,7 +39,7 @@ public class PacketData {
 		}
 	}
 
-	void putString(String str) {
+	public void putString(String str) {
 		byte[] strBytes = null;
 		try {
 			strBytes = str.getBytes("CP1251");
@@ -62,6 +62,9 @@ public class PacketData {
 	public long getDWord() {
 		long res = getDWord(data, position, false);
 		position += 4;
+		//System.out.println("Read DWord");
+		//System.out.println("read byte =" + position + " of "+data.length);
+		//System.out.println("int = "+res);
 		return res;
 	}
 
@@ -84,10 +87,12 @@ public class PacketData {
 
 	public String getString() {
 		int msgLen = (int) getDWord();
-		System.out.println("msgLen =" + msgLen);
-		// String str = byteArrayToString(data, position, msgLen);
+		//System.out.println("Read String");
+		//System.out.println("msgLen = "+msgLen);
+		//String str = byteArrayToString(data, position, msgLen);
 		String str = new String(data, position, msgLen);
 		position += msgLen;
+		//System.out.println("read byte =" + position + " of "+data.length);
 		return removeCr(str);
 	}
 
@@ -110,5 +115,32 @@ public class PacketData {
 		}
 		return result.toString();
 	}
+	
+	public String getUcs2String() {
+        final int msgLen = (int) getDWord();
+        return getUcs2StringZ(msgLen);
+    }
+
+    public String getUcs2StringZ(int dataLength) {
+        StringBuffer sb = new StringBuffer(dataLength / 2);
+        for (int i = 0; i < dataLength; i += 2) {
+            int halfCh = data[position++];
+            sb.append((char) (halfCh | (data[position++] << 8)));
+        }
+        return sb.toString();
+    }
+    
+    public void putUcs2String(String str) {
+        putDWord(str.length() * 2);
+        try {
+            for (int i = 0; i < str.length(); ++i) {
+                char ch = str.charAt(i);
+                out.write(ch & 0xFF);
+                out.write((ch >> 8) & 0xFF);
+            }
+        } catch (Exception ex) {
+        }
+    }
+
 
 }

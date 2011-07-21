@@ -29,9 +29,8 @@ public class MRIM_CS_PING extends Packet implements Runnable {
 
 	@Override
 	public void run() {
-		while (run) {
-			System.out.println("Send packet ping");
-			client.sendPacket(new MRIM_CS_PING());
+		while (run) {			
+			client.sendPacket(this);
 			try {
 				Thread.sleep(1000 * time);
 			} catch (Exception ex) {
@@ -52,6 +51,10 @@ public class MRIM_CS_PING extends Packet implements Runnable {
 
 	public void setTime(int t) {
 		this.time = t;
+	}
+	
+	public Packet push(){
+		return this;
 	}
 
 }

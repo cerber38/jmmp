@@ -6,10 +6,15 @@ package ru.mmp.util;
  */
 public class EncodeTools {
 
-	public static int byteToInt(byte[] buf, int pos) {
-		return ((buf[pos + 3] & 0xFF) << 24) + ((buf[pos - 2] & 0xFF) << 16)
-				+ ((buf[pos - 1] & 0xFF) << 8) + (buf[pos] & 0xFF);
-	}
+	public static int byteArrayToInt(byte[] b, int offset) {
+        int value = 0;
+        for (int i = 0; i < 4; i++) {
+            int shift = (4 - 1 - i) * 8;
+            value += (b[i + offset] & 0x000000FF) << shift;
+        }
+        value = Integer.reverseBytes(value);
+        return value;
+    }
 
 	public static int getDWord(byte[] data, int pos) {
 		return (int) getDWordLE(data, pos);
