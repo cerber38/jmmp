@@ -89,8 +89,8 @@ public class MMPConnect implements Runnable {
 					if (in.available() >= dataLen) {
 						in.read(data, 0, dataLen);
 						// добавляем в очередь на обработку
-						System.out.println("Incoming packet len = "
-								+ (head.length + data.length));
+						//System.out.println("Incoming packet len = "
+						//		+ (head.length + data.length));
 						//System.out.println("Head = "+getHexString(head));
 						//System.out.println("Data = "+getHexString(data));
 						queue.push(new Packet(head, data));

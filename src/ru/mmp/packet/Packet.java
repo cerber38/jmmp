@@ -78,7 +78,7 @@ public class Packet {
 		return seq;
 	}
 
-	public String getHexString(byte[] raw) throws UnsupportedEncodingException {
+	public static String getHexString(byte[] raw) throws UnsupportedEncodingException {
 		byte[] hex = new byte[2 * raw.length];
 		int index = 0;
 

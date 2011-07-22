@@ -32,8 +32,8 @@ public class MRIM_CS_LOGIN2 {
 		data.putString(pass);
 		data.putDWord(1);
 		data.putString("STATUS_ONLINE");
-		data.putString("status");
-		data.putString("xstatus");
+		data.putUcs2String("status");
+		data.putUcs2String("xstatus");
 		data.putDWord(0x3FF);
 		String version = "client=\"jImBot\" version=\"0.1\" build=\"1\"";
 		data.putString(version);

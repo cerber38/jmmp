@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 
 /**
  * 
+ * @author Raziel
  * @author Vladimir Krukov
  */
 public class PacketData {
@@ -44,7 +45,6 @@ public class PacketData {
 		try {
 			strBytes = str.getBytes("CP1251");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			strBytes = str.getBytes();
 			e.printStackTrace();
 		}
@@ -62,9 +62,9 @@ public class PacketData {
 	public long getDWord() {
 		long res = getDWord(data, position, false);
 		position += 4;
-		//System.out.println("Read DWord");
-		//System.out.println("read byte =" + position + " of "+data.length);
-		//System.out.println("int = "+res);
+		// System.out.println("Read DWord");
+		// System.out.println("read byte =" + position + " of "+data.length);
+		// System.out.println("int = "+res);
 		return res;
 	}
 
@@ -87,13 +87,71 @@ public class PacketData {
 
 	public String getString() {
 		int msgLen = (int) getDWord();
-		//System.out.println("Read String");
-		//System.out.println("msgLen = "+msgLen);
-		//String str = byteArrayToString(data, position, msgLen);
 		String str = new String(data, position, msgLen);
+		// System.out.print("String bytes ");
+		// byte[] ms = new byte[msgLen];
+		// System.arraycopy(data, position, ms, 0, msgLen);
+		// try {
+		// System.out.println("String " + Packet.getHexString(ms));
+		// } catch (UnsupportedEncodingException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 		position += msgLen;
-		//System.out.println("read byte =" + position + " of "+data.length);
+		// System.out.println("read byte =" + position + " of "+data.length);
 		return removeCr(str);
+	}
+
+	public String getUCS2byteToString() {
+		int msgLen = (int) getDWord();
+		byte[] ms = new byte[msgLen];
+		System.arraycopy(data, position, ms, 0, msgLen);
+		String m = "";
+		try {
+			String buffer = new String(ms, "UTF-16LE");
+			byte[] b = buffer.getBytes("Cp1251");
+			m = new String(b, "Cp1251");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			m = new String(ms);
+			e.printStackTrace();
+		}
+		// byte[] mss = new byte[msgLen];
+		// System.arraycopy(data, position, mss, 0, msgLen);
+		// try {
+		// System.out.println("String " + Packet.getHexString(mss));
+		// } catch (UnsupportedEncodingException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		position += msgLen;
+		return m;
+	}
+
+	public String getWinByteToString() {
+		int msgLen = (int) getDWord();
+		byte[] ms = new byte[msgLen];
+		System.arraycopy(data, position, ms, 0, msgLen);
+		String m = "";
+		try {
+			String buffer = new String(ms, "Cp1251");
+			byte[] b = buffer.getBytes("Cp1251");
+			m = new String(b, "Cp1251");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			m = new String(ms);
+			e.printStackTrace();
+		}
+		// byte[] mss = new byte[msgLen];
+		// System.arraycopy(data, position, mss, 0, msgLen);
+		// try {
+		// System.out.println("String " + Packet.getHexString(mss));
+		// } catch (UnsupportedEncodingException e) {
+		// TODO Auto-generated catch block
+		// /e.printStackTrace();
+		// }
+		position += msgLen;
+		return m;
 	}
 
 	public static String removeCr(String val) {
@@ -115,32 +173,31 @@ public class PacketData {
 		}
 		return result.toString();
 	}
-	
+
 	public String getUcs2String() {
-        final int msgLen = (int) getDWord();
-        return getUcs2StringZ(msgLen);
-    }
+		final int msgLen = (int) getDWord();
+		return getUcs2StringZ(msgLen);
+	}
 
-    public String getUcs2StringZ(int dataLength) {
-        StringBuffer sb = new StringBuffer(dataLength / 2);
-        for (int i = 0; i < dataLength; i += 2) {
-            int halfCh = data[position++];
-            sb.append((char) (halfCh | (data[position++] << 8)));
-        }
-        return sb.toString();
-    }
-    
-    public void putUcs2String(String str) {
-        putDWord(str.length() * 2);
-        try {
-            for (int i = 0; i < str.length(); ++i) {
-                char ch = str.charAt(i);
-                out.write(ch & 0xFF);
-                out.write((ch >> 8) & 0xFF);
-            }
-        } catch (Exception ex) {
-        }
-    }
+	public String getUcs2StringZ(int dataLength) {
+		StringBuffer sb = new StringBuffer(dataLength / 2);
+		for (int i = 0; i < dataLength; i += 2) {
+			int halfCh = data[position++];
+			sb.append((char) (halfCh | (data[position++] << 8)));
+		}
+		return sb.toString();
+	}
 
+	public void putUcs2String(String str) {
+		putDWord(str.length() * 2);
+		try {
+			for (int i = 0; i < str.length(); ++i) {
+				char ch = str.charAt(i);
+				out.write(ch & 0xFF);
+				out.write((ch >> 8) & 0xFF);
+			}
+		} catch (Exception ex) {
+		}
+	}
 
 }
