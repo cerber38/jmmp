@@ -23,6 +23,7 @@ public class MMPClient {
 	private MRIM_CS_PING ping;
 	private List statusListener;
 	private List messageListener;
+	private Status status;
 
 	public MMPClient() {
 		this.email = email;
@@ -32,6 +33,7 @@ public class MMPClient {
 		ping = new MRIM_CS_PING(this);
 		statusListener = new Vector();
 		messageListener = new Vector();
+		status = new Status();
 	}
 
 	public void setEmail(String email) {
@@ -69,10 +71,6 @@ public class MMPClient {
 		sendPacket(m.push());
 	}
 
-	public void chStatus() {
-		sendPacket(new MRIM_CS_CHANGE_STATUS().push());
-	}
-
 	public void sendPacket(Packet p) {
 		if (connect)
 			con.sendPacket(p);
@@ -104,6 +102,17 @@ public class MMPClient {
 
 	public List getMessageListener() {
 		return messageListener;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(int id, String title, String desc) {
+		status.setStatus(id);
+		status.setTitle(title);
+		status.setDesc(desc);
+		sendPacket(new MRIM_CS_CHANGE_STATUS().push(status));
 	}
 
 }

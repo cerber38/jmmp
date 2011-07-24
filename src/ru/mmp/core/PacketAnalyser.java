@@ -1,5 +1,6 @@
 package ru.mmp.core;
 
+import ru.mmp.listener.MessageListener;
 import ru.mmp.listener.StatusListener;
 import ru.mmp.packet.Packet;
 import ru.mmp.packet.inc.*;
@@ -14,7 +15,8 @@ public class PacketAnalyser {
 	public static final int MRIM_CS_LOGIN_ACK = 0x1004;
 	public static final int MRIM_CS_LOGIN_REJ = 0x1005;
 	public static final int MRIM_CS_MESSAGE_ACK = 0x00001009;
-	
+	public static final int MRIM_CS_MESSAGE_STATUS = 0x00001012;
+
 	private MMPClient client;
 	private MRIM_CS_HELLO_ASC hello_asc;
 	private MRIM_CS_LOGIN_REJ login_rej;
@@ -44,6 +46,16 @@ public class PacketAnalyser {
 		case MRIM_CS_MESSAGE_ACK:
 			message_ack.parser(packet);
 			message_ack.notifyEvent(client);
+			message_ack.execute(client);
+			break;
+		case MRIM_CS_MESSAGE_STATUS:
+			// TODO Разобрать пакет.
+			for (int i = 0; i < client.getMessageListener().size(); i++) {
+				MessageListener l = (MessageListener) client
+						.getMessageListener().get(i);
+				l.onMessageAck();
+			}
+			System.out.println("Сообщение доставлено");
 			break;
 		default:
 			System.out.println("Ошибка обработки. Неизвестный пакет.");
@@ -56,7 +68,6 @@ public class PacketAnalyser {
 	 * Уведомляем слушателей об успешной авторизации
 	 */
 	private void onLogin() {
-		//client.chStatus();
 		for (int i = 0; i < client.getStatusListener().size(); i++) {
 			StatusListener l = (StatusListener) client.getStatusListener().get(
 					i);

@@ -5,11 +5,12 @@ import ru.mmp.listener.MessageListener;
 import ru.mmp.packet.Packet;
 import ru.mmp.packet.PacketData;
 import ru.mmp.packet.RreceivedPacket;
+import ru.mmp.packet.out.MRIM_CS_MESSAGE_RECV;
 
 /**
  * 
  * @author Raziel
- *
+ * 
  */
 public class MRIM_CS_MESSAGE_ACK implements RreceivedPacket {
 
@@ -17,6 +18,7 @@ public class MRIM_CS_MESSAGE_ACK implements RreceivedPacket {
 	private final static int MESSAGE_JABBER_NOTIFY = 0x00200404;
 	private final static int MESSAGE_QIP = 0x00100000;
 	private final static int MESSAGE_QIP_NOTIFY = 0x00300404;
+	private final static int MESSAGE_QIP_AUTHORIZED = 0x0010000c;
 	private final static int MESSAGE_MAGENT_NOTIFY = 0x00100404;
 	private final static int MESSAGE_AGENT = 0x00100080;
 
@@ -32,14 +34,21 @@ public class MRIM_CS_MESSAGE_ACK implements RreceivedPacket {
 		email = data.getString();
 		if (flag == MESSAGE_JABBER)
 			msg = data.getWinByteToString();
+		else if (flag == MESSAGE_QIP_AUTHORIZED)
+			// TODO Разобраться с сообщением при авторизации
+			msg = data.getString();
 		else
 			msg = data.getUCS2byteToString();
 	}
 
-	@Override
 	public void execute(MMPClient client) {
-		// TODO Auto-generated method stub
-
+		if (flag == MESSAGE_QIP || flag == MESSAGE_JABBER
+				|| flag == MESSAGE_AGENT) {
+			MRIM_CS_MESSAGE_RECV m = new MRIM_CS_MESSAGE_RECV();
+			m.setEmail(email);
+			m.setSeq(seq);
+			client.sendPacket(m.push());
+		}
 	}
 
 	public void notifyEvent(MMPClient client) {
@@ -55,6 +64,8 @@ public class MRIM_CS_MESSAGE_ACK implements RreceivedPacket {
 		} else if (flag == MESSAGE_QIP_NOTIFY || flag == MESSAGE_MAGENT_NOTIFY
 				|| flag == MESSAGE_JABBER_NOTIFY) {
 			System.out.println(email + " пишет сообщение.");
+		} else if (flag == MESSAGE_QIP_AUTHORIZED) {
+			System.out.println("Запрос авторизации от " + email + ", " + msg);
 		}
 	}
 

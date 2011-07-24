@@ -1,5 +1,6 @@
 package ru.mmp.packet.out;
 
+import ru.mmp.core.Status;
 import ru.mmp.packet.Packet;
 import ru.mmp.packet.PacketData;
 
@@ -30,10 +31,10 @@ public class MRIM_CS_LOGIN2 {
 		PacketData data = new PacketData();
 		data.putString(email);
 		data.putString(pass);
-		data.putDWord(1);
+		data.putDWord(Status.STATUS_ONLINE);
 		data.putString("STATUS_ONLINE");
-		data.putUcs2String("status");
-		data.putUcs2String("xstatus");
+		data.putUcs2String("");
+		data.putUcs2String("");
 		data.putDWord(0x3FF);
 		String version = "client=\"jImBot\" version=\"0.1\" build=\"1\"";
 		data.putString(version);

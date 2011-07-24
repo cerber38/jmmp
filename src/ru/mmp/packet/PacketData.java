@@ -11,12 +11,15 @@ import java.io.UnsupportedEncodingException;
 public class PacketData {
 
 	private ByteArrayOutputStream out;
+	private ByteArrayOutputStream base;
 	byte[] data;
 	int position = 0;
 
 	public PacketData() {
 		out = new ByteArrayOutputStream();
+		base = new ByteArrayOutputStream();
 	}
+	
 
 	public PacketData(byte[] data) {
 		this.data = data;
@@ -89,14 +92,14 @@ public class PacketData {
 		int msgLen = (int) getDWord();
 		String str = new String(data, position, msgLen);
 		// System.out.print("String bytes ");
-		// byte[] ms = new byte[msgLen];
-		// System.arraycopy(data, position, ms, 0, msgLen);
-		// try {
-		// System.out.println("String " + Packet.getHexString(ms));
-		// } catch (UnsupportedEncodingException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
+		 byte[] ms = new byte[msgLen];
+		 System.arraycopy(data, position, ms, 0, msgLen);
+		 try {
+		 System.out.println("String " + Packet.getHexString(ms));
+		 } catch (UnsupportedEncodingException e) {
+		 // TODO Auto-generated catch block
+		 e.printStackTrace();
+		 }
 		position += msgLen;
 		// System.out.println("read byte =" + position + " of "+data.length);
 		return removeCr(str);
@@ -199,5 +202,67 @@ public class PacketData {
 		} catch (Exception ex) {
 		}
 	}
+	
+	public static final byte[] base64decode(String str) {
+        if (null == str) str = "";
+        PacketData out = new PacketData();
+        for (int strIndex = 0; strIndex < str.length(); ++strIndex) {
+    	    strIndex = base64GetNextIndex(str, strIndex);
+            if (-1 == strIndex) break;
+            int ch1 = base64GetNextChar(str, strIndex);
+            if (-1 == ch1) break;
+
+            strIndex = base64GetNextIndex(str, strIndex + 1);
+            if (-1 == strIndex) break;
+            int ch2 = base64GetNextChar(str, strIndex);
+            if (-1 == ch2) break;
+            out.writeByte((byte)(0xFF & ((ch1 << 2) | (ch2 >>> 4))));
+
+            strIndex = base64GetNextIndex(str, strIndex + 1);
+            if (-1 == strIndex) break;
+            int ch3 = base64GetNextChar(str, strIndex);
+            if (-1 == ch3) break;
+            out.writeByte((byte)(0xFF & ((ch2 << 4) | (ch3 >>> 2))));
+
+            strIndex = base64GetNextIndex(str, strIndex + 1);
+            if (-1 == strIndex) break;
+            int ch4 = base64GetNextChar(str, strIndex);
+            if (-1 == ch4) break;
+            out.writeByte((byte)(0xFF & ((ch3 << 6) | (ch4 >>> 0))));
+        }
+        return out.toByteArray();
+    }
+	
+	private static final int base64GetNextIndex(String str, int index) {
+        for (; index < str.length(); ++index) {
+            char ch = str.charAt(index);
+            if ('=' == ch) {
+                return index;
+            }
+            int code = base64.indexOf(ch);
+            if (-1 != code) {
+                return index;
+            }
+        }
+        return -1;
+    }
+	
+	private static final int base64GetNextChar(String str, int index) {
+        if (-1 == index) return -2;
+        char ch = str.charAt(index);
+        if ('=' == ch) {
+            return -1;
+        }
+        return base64.indexOf(ch);
+    }
+	
+	public void writeByte(int value) {
+        try {
+            base.write(value);
+        } catch (Exception e) {
+        }
+    }
+	
+	private static final String base64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
 }
