@@ -21,6 +21,7 @@ public class MRIM_CS_MESSAGE_ACK implements RreceivedPacket {
 	private final static int MESSAGE_QIP_AUTHORIZED = 0x0010000c;
 	private final static int MESSAGE_MAGENT_NOTIFY = 0x00100404;
 	private final static int MESSAGE_AGENT = 0x00100080;
+	private final static int MESSAGE_AGENT_AUTHORIZED = 0x0018000c;
 
 	private int flag;
 	private int seq;
@@ -34,7 +35,8 @@ public class MRIM_CS_MESSAGE_ACK implements RreceivedPacket {
 		email = data.getString();
 		if (flag == MESSAGE_JABBER)
 			msg = data.getWinByteToString();
-		else if (flag == MESSAGE_QIP_AUTHORIZED)
+		else if (flag == MESSAGE_QIP_AUTHORIZED
+				|| flag == MESSAGE_AGENT_AUTHORIZED)
 			// TODO Разобраться с сообщением при авторизации
 			msg = data.getString();
 		else
@@ -64,8 +66,15 @@ public class MRIM_CS_MESSAGE_ACK implements RreceivedPacket {
 		} else if (flag == MESSAGE_QIP_NOTIFY || flag == MESSAGE_MAGENT_NOTIFY
 				|| flag == MESSAGE_JABBER_NOTIFY) {
 			System.out.println(email + " пишет сообщение.");
-		} else if (flag == MESSAGE_QIP_AUTHORIZED) {
+		} else if (flag == MESSAGE_QIP_AUTHORIZED
+				|| flag == MESSAGE_AGENT_AUTHORIZED) {
+			client.Authorize(email);
 			System.out.println("Запрос авторизации от " + email + ", " + msg);
+			for (int i = 0; i < client.getMessageListener().size(); i++) {
+				MessageListener l = (MessageListener) client
+						.getMessageListener().get(i);
+				l.onAuthorization(email, msg);
+			}
 		}
 	}
 

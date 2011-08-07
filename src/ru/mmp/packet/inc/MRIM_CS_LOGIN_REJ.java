@@ -30,6 +30,7 @@ public class MRIM_CS_LOGIN_REJ implements RreceivedPacket {
 			StatusListener l = (StatusListener) client.getStatusListener().get(
 					i);
 			l.onAuthorizationError(msg);
+			System.out.println(client.getEmail() + " On Authorization Error "+msg);
 		}
 	}
 

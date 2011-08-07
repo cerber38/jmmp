@@ -94,12 +94,12 @@ public class PacketData {
 		// System.out.print("String bytes ");
 		 byte[] ms = new byte[msgLen];
 		 System.arraycopy(data, position, ms, 0, msgLen);
-		 try {
-		 System.out.println("String " + Packet.getHexString(ms));
-		 } catch (UnsupportedEncodingException e) {
+		 //try {
+		 //System.out.println("String " + Packet.getHexString(ms));
+		 //} catch (UnsupportedEncodingException e) {
 		 // TODO Auto-generated catch block
-		 e.printStackTrace();
-		 }
+		 //e.printStackTrace();
+		 //}
 		position += msgLen;
 		// System.out.println("read byte =" + position + " of "+data.length);
 		return removeCr(str);

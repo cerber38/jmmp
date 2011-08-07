@@ -39,6 +39,10 @@ public class MMPClient {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
+	public String getEmail(){
+		return this.email;
+	}
 
 	public void setPass(String pass) {
 		this.pass = pass;
@@ -113,6 +117,10 @@ public class MMPClient {
 		status.setTitle(title);
 		status.setDesc(desc);
 		sendPacket(new MRIM_CS_CHANGE_STATUS().push(status));
+	}
+
+	public void Authorize(String email) {
+		sendPacket(new MRIM_CS_AUTHORIZE().push(email));
 	}
 
 }

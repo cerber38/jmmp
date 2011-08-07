@@ -16,6 +16,9 @@ public class PacketAnalyser {
 	public static final int MRIM_CS_LOGIN_REJ = 0x1005;
 	public static final int MRIM_CS_MESSAGE_ACK = 0x00001009;
 	public static final int MRIM_CS_MESSAGE_STATUS = 0x00001012;
+	public static final int MRIM_CS_USER_STATUS = 0x100F;
+	public static final int MRIM_CS_AUTHORIZE_ACK = 0x1021;
+	public static final int MRIM_CS_CONTACT_LIST2 = 0x1037;
 
 	private MMPClient client;
 	private MRIM_CS_HELLO_ASC hello_asc;
@@ -49,13 +52,26 @@ public class PacketAnalyser {
 			message_ack.execute(client);
 			break;
 		case MRIM_CS_MESSAGE_STATUS:
-			// TODO Разобрать пакет.
+			// TODO Разобрать пакет. Узнать статус доставки.
 			for (int i = 0; i < client.getMessageListener().size(); i++) {
 				MessageListener l = (MessageListener) client
 						.getMessageListener().get(i);
 				l.onMessageAck();
 			}
 			System.out.println("Сообщение доставлено");
+			break;
+		case MRIM_CS_USER_STATUS:
+			// TODO Пользователь сменил статус. Узнать статус, оповестить
+			// слушателей
+			System.out.println("Пользователь сменил статус.");
+			break;
+		case MRIM_CS_AUTHORIZE_ACK:
+			// TODO Пользователь авторизовался.
+			System.out.println("Пользователь авторизовался.");
+			break;
+		case MRIM_CS_CONTACT_LIST2:
+			// TODO Контакт лист
+			System.out.println("Контакт лист");
 			break;
 		default:
 			System.out.println("Ошибка обработки. Неизвестный пакет.");
