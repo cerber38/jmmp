@@ -95,6 +95,7 @@ public class MrimProtocol extends Destroyable implements Protocol,
 		con = new MMPClient();
 		con.setEmail(screenName+"@mail.ru");
 		con.setPass(pass);
+		
 		con.addStatusListener(this);
 		con.addMessageListener(this);
 		try {
@@ -224,6 +225,7 @@ public class MrimProtocol extends Destroyable implements Protocol,
 	public void onLogin() {
 		connected = true;
 		eva.protocolChangeState(screenName, EventProxy.STATE_LOGON, null);
+		con.setStatus(status, desc1, desc);
 
 	}
 
