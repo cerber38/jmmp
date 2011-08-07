@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Jmmp
+Bundle-SymbolicName: jmmp
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nikolaev Maksim
+Export-Package: ru.mmp.core,
+ ru.mmp.listener,
+ ru.mmp.packet,
+ ru.mmp.packet.inc,
+ ru.mmp.packet.out,
+ ru.mmp.queue,
+ ru.mmp.util
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

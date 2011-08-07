@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Mrim
+Bundle-SymbolicName: ru.jimbot.protocol.mrim
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Activator: ru.jimbot.protocol.mrim.internal.ActivatorMrimProtocol
+Import-Package: com.google.gson,
+ com.google.gson.reflect,
+ org.osgi.framework;version="1.5.0",
+ org.osgi.service.event;version="1.2.0",
+ org.osgi.util.tracker;version="1.4.0",
+ ru.jimbot.core,
+ ru.jimbot.core.events,
+ ru.jimbot.core.services,
+ ru.mmp.core,
+ ru.mmp.listener
